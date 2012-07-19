@@ -1,9 +1,9 @@
 ObjectMap
 =========
 
-Object Mapper allows a library store and lookup internal objects using int-based
-keys. This provides an implementation of opaque objects with the following pros 
-and cons:
+Object Mapper allows one to store objects within a hash table and access them
+using int-based keys. This provides an implementation of opaque objects with 
+the following pros and cons:
 
 Pros:
 - Object handles returned to users are integer based which makes it more 
