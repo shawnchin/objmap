@@ -36,12 +36,39 @@ ObjectMap* objmap_new(void) {
   om->map = (void*)kh_init(objmap); 
   assert(om->map != NULL);
   
+  om->deallocator = NULL;
   return om;
+}
+
+void objmap_set_deallocator(ObjectMap *om, void(*deallocator)(void*)) {
+  if (!om) om->deallocator = deallocator;
+}
+
+void objmap_flush(ObjectMap* om) {
+  khiter_t k;
+  khash_t(objmap) *_m;
+
+  if (!om) return;
+  _m = MAP(om);
+  
+  /* deallocate all objects stored within the hashtable */
+  for (k = kh_begin(_m); k != kh_end(_m); ++k) {
+    if (kh_exist(_m, k)) {
+      (om->deallocator) ? om->deallocator(kh_value(_m, k))
+                        : free(kh_value(_m, k));
+      kh_del(objmap, _m, k);
+    }
+  }
+}
+
+void objmap_reset(ObjectMap* om) {
+  if (!om) return;
+  om->top = 1;
+  objmap_flush(om);
 }
 
 void objmap_delete(ObjectMap **om_ptr) {
   ObjectMap *om;
-  khiter_t k;
   khash_t(objmap) *_m;
   
   if (om_ptr == NULL) return;
@@ -50,9 +77,7 @@ void objmap_delete(ObjectMap **om_ptr) {
   *om_ptr = NULL; /* overwrite user's ptr with NULL */
   
   /* deallocate all objects stored within the hashtable */
-  for (k = kh_begin(_m); k != kh_end(_m); ++k) {
-    if (kh_exist(_m, k)) free(kh_value(_m, k));
-  }
+  objmap_flush(om);
   
   /* delete hashtable */
   kh_destroy(objmap, _m);

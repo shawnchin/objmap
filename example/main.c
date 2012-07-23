@@ -27,6 +27,19 @@ int main(void) {
   assert(counter_peek(c1) == 0);
   assert(counter_peek(c2) == 2);  
 
+  /* delete all counters */
+  counter_manager_delete_all();
+  assert(counter_increment(c1) == 0); /* c1 should no longer be valid */
+  assert(counter_increment(c2) == 0); /* c2 should no longer be valid */
+
+  /* create new counters */
+  c1 = counter_new();
+  c2 = counter_new();
+  counter_increment(c1);
+  assert(counter_peek(c1) == 1);
+  assert(counter_peek(c2) == 0);
+
+  /* manually delete one counter */
   counter_delete(&c1);
   assert(c1 == OBJMAP_NULL);
   

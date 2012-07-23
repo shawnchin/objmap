@@ -55,24 +55,41 @@ typedef uint32_t objmap_key_t;
 
 /* return values */
 /*! \brief NULL handle */
-#define OBJMAP_NULL 0
-#define OBJMAP_ERR_OVERFLOW (OBJMAP_KEY_LIMIT - 0)
-#define OBJMAP_ERR_INTERNAL (OBJMAP_KEY_LIMIT - 1)
-#define OBJMAP_MAX_INDEX    (OBJMAP_KEY_LIMIT - 2)
+#define OBJMAP_NULL ((objmap_key_t)0)
+#define OBJMAP_ERR_OVERFLOW ((objmap_key_t)(OBJMAP_KEY_LIMIT - 0))
+#define OBJMAP_ERR_INTERNAL ((objmap_key_t)(OBJMAP_KEY_LIMIT - 1))
+#define OBJMAP_MAX_INDEX    ((objmap_key_t)(OBJMAP_KEY_LIMIT - 2))
+
+/*! \brief Pointer type for functions that can be used in place of free() */
+typedef void (*objmap_free_func_t)(void*);
 
 /*! \brief Data Structure representing an object map */
 typedef struct {
   objmap_key_t top; /*!< Next key value to assign */
   void* map;        /*!< Pointer to hash table used to storage */
+  void (*deallocator)(void*); /*!< Custom deallocator function for members */
 } ObjectMap;
 
 /*! 
  * \brief Creates a new object map
  * \return Pointer to the newly created map
- * 
+ *
  * If an error occurs (e.g. insufficient memory), \c NULL is returned.
  */
 ObjectMap* objmap_new(void);
+
+/*!
+ * \brief Specify a deallocation function to use when freeing objects
+ * \param[in] om Reference to map
+ * \param[in] deallocator Deallocation function for objects within map
+ *
+ * By default, \c free() is used to free objects with the mapper. This routine
+ * allows users to specify a custom function to be use - this is useful when
+ * memory associated with the object also needs to be freed.
+ *
+ * When set to \c NULL, the mapper will revert back to the default behaviour. 
+ */
+void objmap_set_deallocator(ObjectMap *om, void(*deallocator)(void*));
 
 /*!
  * \brief Adds a new object to the map
@@ -102,6 +119,34 @@ objmap_key_t objmap_push(ObjectMap *om, void *obj);
  * by the map.
  */
 void* objmap_get(ObjectMap *om, objmap_key_t handle);
+
+/*!
+ * \brief Deletes all objects within the map
+ * \param[in] om Reference to map
+ *
+ * This will delete all objects within the map while maintaining the internal
+ * map datastructure. This allows users to quickly all objects within
+ * the map without having to destroy and recreate the object mapper.
+ *
+ * If \c reset_handles is not \c 0 (default), internal counters will be reset
+ * which allow handles to be recycled. Do note that this can potentially lead to
+ * confusing errors if stale handles are later used for querying the map.
+ */
+void objmap_flush(ObjectMap* om);
+
+/*!
+ * \brief Deletes all objects within the map and resets handle counter
+ * \param[in] om Reference to map
+ * 
+ * Does the same thing as objmap_flush() except that it also resets the
+ * internal counters so that object handles can be recycled.
+ *
+ * This can help avoid the issue of running out of keys for long running
+ * applications that repeatedly populates and flushes the mapper. However, do
+ * not that this can potentially lead to confusing errors if stale handles are
+ * later used for querying the map.
+ */
+void objmap_reset(ObjectMap* om);
 
 /*!
  * \brief Removes an object from the map and return its address

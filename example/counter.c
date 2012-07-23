@@ -22,6 +22,12 @@ void counter_manager_finalise(void) {
   objmap_delete(&map); /* this should also free all existing counter objs */
 }
 
+/* deletes all registered counters */
+void counter_manager_delete_all(void) {
+  if (map == NULL) return; /* not yet initialsed or already finalised */
+  objmap_flush(map);
+}
+
 /* allocate new object, store in map and return handle */
 counter counter_new(void) {
   counter c;
@@ -53,7 +59,6 @@ unsigned int counter_increment(counter c) {
   
   /* retrieve object */
   obj = (struct _counter*)objmap_get(map, c);
-  assert(obj != NULL);
   if (obj == NULL) return 0;  /* invalid key */
   
   obj->value++;

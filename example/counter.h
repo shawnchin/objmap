@@ -36,6 +36,14 @@ void counter_manager_init(void);
  */
 void counter_manager_finalise(void);
 
+/*! \brief Deletes all counters
+ * 
+ * Deletes all registered counters.
+ *
+ * This routine is here mainly to illustrate the use of objmap_flush().
+ */
+void counter_manager_delete_all(void);
+
 /*! 
  * \brief Creates a new counter
  * \return Handle for the new counter object
