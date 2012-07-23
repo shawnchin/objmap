@@ -18,10 +18,12 @@ Pros:
 Cons:
 - Slower than using opaque pointers due to lookups
 - Can potentially run out of keys (generated incrementally). The limit 
-   depends on the datatype used for keys (unsigned int, unsigned long, or even
-   unsigned long long).
+   depends on the datatype used for keys.
  - To keep the code simple, we do not reuse keys from deleted items
- 
+ - By default, we use 32-bit unsigned integers for keys (`uint32_t`).
+   Compile with `-DOBJMAP_USE_64BIT_KEYS` to switch to 64-bit unsigned ints
+   (`uint64_t`). This changes the type definition for the keys as well as the
+   hash function used for the hash table.
 
 This is a stripped down version of a module used within an existing product.
 At this bare-bone level, it is essentially a wrapper around the internal 
