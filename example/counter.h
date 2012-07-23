@@ -17,7 +17,7 @@
 typedef objmap_key_t counter;
 
 /*! \brief NULL handle */
-#define OBJMAP_NULL COUNTER_NULL
+#define COUNTER_NULL OBJMAP_NULL
 
 /*! \brief Initiase the module so counters can be created 
  *

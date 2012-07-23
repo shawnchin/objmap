@@ -6,7 +6,7 @@
  */
 #ifndef OBJMAP_H_
 #define OBJMAP_H_
-#include <limits.h>
+#include <stdint.h>
 
 /*! \defgroup OBJMAP Utility: Object Mapper 
  * 
@@ -42,15 +42,16 @@
  */
  
 /*! \brief Variable type used as hashtable key */
-typedef unsigned int objmap_key_t;
-/* typedef unsigned long objmap_key_t; */
+typedef uint32_t objmap_key_t;
+/* typedef uint64_t objmap_key_t; */
 
 /*! \brief maximum possible value for key type 
  * 
  * This depends on the datatype used to represent keys. See ::objmap_key_t
  */
-#define OBJMAP_KEY_LIMIT UINT_MAX 
-/* #define OBJMAP_KEY_LIMIT ULONG_MAX */
+#define OBJMAP_KEY_LIMIT ((objmap_key_t)-1)
+/* #define OBJMAP_KEY_LIMIT UINT_MAX */
+
 
 /* return values */
 /*! \brief NULL handle */
