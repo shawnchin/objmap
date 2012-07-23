@@ -26,24 +26,23 @@
  * Cons:
  * - Slower than using opaque pointers due to the hashtable lookup
  * - Can potentially run out of keys (generated incrementally). The limit 
- *   depends on the datatype used for keys (unsigned int, unsigned long, or even
- *   unsigned long long). See ::objmap_key_t.
+ *   depends on the datatype used for keys. See ::objmap_key_t.
  *   - To keep the code simple, we do not reuse keys from deleted items
+ *   - By default, we use 32-bit unsigned integers for keys (uint32_t). Compile
+ *     with OBJMAP_USE_64BIT_KEYS to switch to 64-bit unsigned ints (uint64_t)
  * 
  * \note This is a stripped down version and is essentially a wrapper around
  * the internal hashtable implementation (see khash.h).
  * 
  * @{*/
 
-/* To use a different datatype for keys, the following needs to be modified:
- * - the type definition of objmap_key_t
- * - the value of OBJMAP_KEY_LIMIT. 
- * - the khash initialisation call (in objmap.c) : KHASH_MAP_INIT_?()
- */
- 
 /*! \brief Variable type used as hashtable key */
+#ifdef OBJMAP_USE_64BIT_KEYS
+typedef uint64_t objmap_key_t;
+#else
 typedef uint32_t objmap_key_t;
-/* typedef uint64_t objmap_key_t; */
+#endif
+
 
 /*! \brief maximum possible value for key type 
  * 

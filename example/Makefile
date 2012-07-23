@@ -14,6 +14,9 @@ CFLAGS += $(GCC_CFLAGS_LVL2)
 CFLAGS += $(GCC_CFLAGS_LVL3)
 CFLAGS += $(GCC_CFLAGS_LVL4)
 
+# uncomment to use 64-bt keys for objmap
+# CFLAGS += -DOBJMAP_USE_64BIT_KEYS
+
 DEPS      = $(HEADERS) Makefile 
 OBJECTS   = $(SOURCES:.c=.o)
 

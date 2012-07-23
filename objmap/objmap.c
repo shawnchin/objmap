@@ -13,9 +13,14 @@
 #include "khash.h"
 #include "objmap.h"
 
+#ifdef OBJMAP_USE_64BIT_KEYS
+/* initialise khash of type "objmap" with "uint64_t" key and "void*" value */
+KHASH_MAP_INIT_INT64(objmap, void*)
+#else
 /* initialise khash of type "objmap" with "uint32_t" key and "void*" value */
 KHASH_MAP_INIT_INT(objmap, void*)
-/* KHASH_MAP_INIT_INT64(objmap, void*) // uint64_t */
+#endif
+
 
 /* shortcut for accessing internal hashtable with correct type */
 #define MAP(om) ((khash_t(objmap)*)om->map)
